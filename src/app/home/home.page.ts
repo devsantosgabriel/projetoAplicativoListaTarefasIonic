@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertController, PopoverController, ToastController } from '@ionic/angular';
 import { TarefaService } from '../services/tarefa.service';
 import { PopoverComponent } from '../popover/popover.component';
+import { Observable } from 'rxjs';
+
 
 
 
@@ -10,14 +12,17 @@ import { PopoverComponent } from '../popover/popover.component';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   type: string = "pending"
+  public tarefas: Observable<any[]>;
 
   constructor(public alertController: AlertController, public tarefaService: TarefaService,
     public toastController: ToastController, public popoverController: PopoverController) { }
+
 ngOnInit(){
-  this.tarefaService.getFromStorage();
+  this.tarefas = this.tarefaService.getFromFirestore();
 }
+
   async presentAlertPromptAdd() {
     const alert = await this.alertController.create({
       header: 'Adicionar tarefa',
@@ -57,7 +62,7 @@ ngOnInit(){
     await alert.present();
   }
 
-  async presentAlertPromptDelete(index: number) {
+  async presentAlertPromptDelete(id: number) {
     const alert = await this.alertController.create({
       header: 'Excluir tarefa',
       message: 'Deseja realmente excluir a tarefa?',
@@ -69,7 +74,7 @@ ngOnInit(){
         {
           text: 'Excluir',
           handler: () => {
-            this.tarefaService.delTarefas(index);
+            this.tarefaService.deleteFromFirestore(id)
           }
         }
       ]
@@ -77,48 +82,8 @@ ngOnInit(){
 
     await alert.present();
   }
-
-  async presentAlertPromptDeleteTemp(index: number) {
-    const alert = await this.alertController.create({
-      header: 'Excluir tarefa',
-      message: 'Deseja realmente excluir a tarefa?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Excluir',
-          handler: () => {
-            this.tarefaService.delTarefasTemp(index);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-  async presentAlertPromptRestaurar(index: number) {
-    const alert = await this.alertController.create({
-      header: 'Restaurar tarefa',
-      message: 'Deseja realmente restaurar a tarefa?',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Restaurar',
-          handler: () => {
-            this.tarefaService.restaurarTarefas(index);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-  async presentAlertPromptUpdate(index: number, tarefa: any) {
+  
+  async presentAlertPromptUpdate(id, tarefa) {
     const alert = await this.alertController.create({
       header: 'Atualizar tarefa',
       inputs: [
@@ -133,7 +98,7 @@ ngOnInit(){
           type: 'date',
           min: '2023-01-01',
           max: '2025-12-31',
-          value: tarefa.date.getFullYear() + "-" + ((tarefa.date.getMonth() + 1) < 10 ? "0" + tarefa.date.getMonth() + 1 : tarefa.date.getMonth() + 1) + "-" + ((tarefa.date.getDay() + 1) < 10 ? "0" + tarefa.date.getDay() : tarefa.date.getDay())
+          value: tarefa.date.toDate().getFullYear() + "-" + ((tarefa.date.toDate().getMonth() + 1) < 10 ? "0" + tarefa.date.toDate().getMonth() + 1 : tarefa.date.toDate().getMonth() + 1) + "-" + ((tarefa.date.toDate().getDay() + 1) < 10 ? "0" + tarefa.date.toDate().getDay() : tarefa.date.toDate().getDay())
         }
       ],
       buttons: [
@@ -145,11 +110,11 @@ ngOnInit(){
           text: 'Salvar',
           handler: (alertData) => {
             if (alertData.tarefa != "") {
-              this.tarefaService.updateTarefas(index, alertData.tarefa, alertData.date);
+              this.tarefaService.updateTarefas(id,alertData.tarefa, alertData.date);
             }
             else {
               this.presentToast();
-              this.presentAlertPromptUpdate(index, tarefa);
+              this.presentAlertPromptUpdate(id, tarefa);
             }
           }
         }

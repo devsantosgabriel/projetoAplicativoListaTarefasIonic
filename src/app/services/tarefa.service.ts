@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 
 interface Tarefa{
   value: string
   date: Date;
-  done?:boolean;
+  done:boolean;
   remove?: boolean; 
 }
 
@@ -17,8 +18,9 @@ export class TarefaService {
   
   private tarefas: Tarefa[] = []; 
   private tarefasExcluidas: Tarefa[] = [];
+  private collectionName : string = 'Tarefa';
 
-  constructor() { }
+  constructor(private firestore: AngularFirestore) { }
 
   public getTarefas(): Tarefa[]{
     return this.tarefas;
@@ -32,6 +34,7 @@ export class TarefaService {
     date = date.replace(/-/g, "/")
     let tarefa: Tarefa = {value: value, date: new Date(date), done: false, remove: false};
     this.tarefas.push(tarefa);
+    this.addFireStore(tarefa);
     this.setToStorage();
   }
 
@@ -40,28 +43,12 @@ export class TarefaService {
     this.setToStorage();
   }
 
-  public delTarefasTemp(index: number){
-    for(let i = 0; i < this.tarefas.length; i++){
-      let removidas = this.tarefas.splice(index,1)[index];
-      this.tarefasExcluidas.push(removidas) 
-    } 
-  }
-
- public restaurarTarefas(index: number){
-  for(let i = 0; i < this.tarefasExcluidas.length; i++){
-    let restauradas = this.tarefasExcluidas.splice(index,1)[index];
-    this.tarefas.push(restauradas) 
-    this.setToStorage()
-  }
- }
-
-  public updateTarefas(index: number,value: string, date: string){    
-    let tarefa: Tarefa= this.tarefas[index];
+  public updateTarefas(id: number,value: string, date: string){    
+    let tarefa: Tarefa;
     tarefa.value = value;
     date = date.replace(/-/g, "/");
     tarefa.date = new Date(date)
-    this.tarefas.splice(index,1, tarefa);
-    this.setToStorage();
+    this.updateFromFirestore(id, tarefa)
   }
 
   public async setToStorage(){
@@ -80,5 +67,25 @@ export class TarefaService {
     }
   }
 
+  public addFireStore (record: Tarefa){
+    return this.firestore.collection(this.collectionName).add(record)
+  }
+
+  public getFromFirestore(){
+    return this.firestore.collection(this.collectionName).valueChanges({idField: 'id'})
+  }
+
+  public updateFromFirestore(recordId, record: Tarefa){
+    return this.firestore.doc(this.collectionName + "/" + recordId).update(record)
+  }
+
+  public updateTarefaDone(id, tarefa){
+    tarefa.done = !tarefa.done
+    this.updateFromFirestore(id, tarefa)
+  }
+
+  public deleteFromFirestore(recordId){
+    return this.firestore.doc(this.collectionName + "/" + recordId).delete()
+  }
 }
 
