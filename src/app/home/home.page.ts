@@ -98,7 +98,10 @@ ngOnInit(){
           type: 'date',
           min: '2023-01-01',
           max: '2025-12-31',
-          value: tarefa.date.toDate().getFullYear() + "-" + ((tarefa.date.toDate().getMonth() + 1) < 10 ? "0" + tarefa.date.toDate().getMonth() + 1 : tarefa.date.toDate().getMonth() + 1) + "-" + ((tarefa.date.toDate().getDay() + 1) < 10 ? "0" + tarefa.date.toDate().getDay() : tarefa.date.toDate().getDay())
+          value: tarefa.date ? tarefa.date.toDate().getFullYear() + "-" +  
+          ((tarefa.date.toDate().getMonth() + 1) < 10 ? "0" + tarefa.date.toDate().getMonth() + 1 : tarefa.date.toDate().getMonth() + 1) + "-" + 
+
+          ((tarefa.date.toDate().getDate()) < 10 ? "0" + tarefa.date.toDate().getDate() : tarefa.date.toDate().getDate()) : " "
         }
       ],
       buttons: [
@@ -110,7 +113,7 @@ ngOnInit(){
           text: 'Salvar',
           handler: (alertData) => {
             if (alertData.tarefa != "") {
-              this.tarefaService.updateTarefas(id,alertData.tarefa, alertData.date);
+              this.tarefaService.updateTarefas(id,alertData.tarefa, alertData.date, tarefa.done);
             }
             else {
               this.presentToast();

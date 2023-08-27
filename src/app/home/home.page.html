@@ -23,18 +23,13 @@
       <ion-icon name="checkmark-circle"></ion-icon>
       <ion-label>Concluídas</ion-label>
     </ion-segment-button>
-
-    <ion-segment-button value="removed" layout="icon-start">
-      <ion-icon name="trash"></ion-icon>
-      <ion-label>Apagadas</ion-label>
-    </ion-segment-button>
   </ion-segment>
 
   <ion-list *ngIf="type == 'pending'">
     <ion-item-sliding *ngFor="let tarefa of tarefas | async">
       <ion-item *ngIf="!tarefa.done">
         <ion-label>{{tarefa.value}}</ion-label>
-        <ion-checkbox slot="start"(ionChange)="tarefaService.updateTarefaDone(tarefa.id, tarefa)"></ion-checkbox>
+        <ion-checkbox slot="start" (ionChange)="tarefaService.updateTarefaDone(tarefa.id, tarefa)"></ion-checkbox>
         <ion-badge color="warning" *ngIf="tarefa.date">
           {{tarefa.date.toDate() | date: 'dd/MM/yyyy'}}
         </ion-badge>
@@ -54,7 +49,8 @@
     <ion-item-sliding *ngFor="let tarefa of tarefas | async">
       <ion-item *ngIf="tarefa.done">
         <ion-label>{{tarefa.value}}</ion-label>
-        <ion-checkbox slot="start" checked = "true" (ionChange)="tarefaService.updateTarefaDone(tarefa.id, tarefa)"></ion-checkbox>
+        <ion-checkbox slot="start" checked="true"
+          (ionChange)="tarefaService.updateTarefaDone(tarefa.id, tarefa)"></ion-checkbox>
         <ion-badge color="warning" *ngIf="tarefa.date">
           {{tarefa.date.toDate() | date: 'dd/MM/yyyy'}}
         </ion-badge>
@@ -70,7 +66,7 @@
     </ion-item-sliding>
   </ion-list>
 
-  
+
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="danger" (click)="presentAlertPromptAdd()">

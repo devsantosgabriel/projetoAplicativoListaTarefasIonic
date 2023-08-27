@@ -7,7 +7,6 @@ interface Tarefa{
   value: string
   date: Date;
   done:boolean;
-  remove?: boolean; 
 }
 
 @Injectable({
@@ -17,7 +16,6 @@ interface Tarefa{
 export class TarefaService {
   
   private tarefas: Tarefa[] = []; 
-  private tarefasExcluidas: Tarefa[] = [];
   private collectionName : string = 'Tarefa';
 
   constructor(private firestore: AngularFirestore) { }
@@ -26,28 +24,27 @@ export class TarefaService {
     return this.tarefas;
   } 
 
-  public getTarefasExcluidas(): Tarefa[]{
-    return this.tarefasExcluidas;
-  }
-
+ 
   public addTarefas(value: string, date: string){
     date = date.replace(/-/g, "/")
-    let tarefa: Tarefa = {value: value, date: new Date(date), done: false, remove: false};
+    let tarefa: Tarefa = {value: value, date: new Date(date), done: false};
     this.tarefas.push(tarefa);
     this.addFireStore(tarefa);
     this.setToStorage();
   }
 
   public delTarefas(index: number){
-    this.tarefasExcluidas.splice(index,1); 
+    this.tarefas.splice(index,1); 
     this.setToStorage();
   }
 
-  public updateTarefas(id: number,value: string, date: string){    
+  public updateTarefas(id: number,value: string, date: string, done: boolean){    
     let tarefa: Tarefa;
-    tarefa.value = value;
-    date = date.replace(/-/g, "/");
-    tarefa.date = new Date(date)
+    if(date != ""){
+      date = date.replace(/-/g, "/");
+      tarefa = {value: value, date: new Date(date), done: done};
+    }else
+    tarefa = {value: value,date: new Date(date), done: done}; 
     this.updateFromFirestore(id, tarefa)
   }
 
