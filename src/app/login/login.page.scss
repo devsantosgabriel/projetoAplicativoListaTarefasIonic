@@ -1,0 +1,25 @@
+ion-content {
+    --ion-background-color: #ffffcc;
+    --background: none;
+    background-image: url('../../assets/fundo.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+}
+
+.login-content{
+    text-align: center;
+    --padding-bottom: 1rem;
+    --padding-end: 1rem;
+    --padding-start: 1rem;
+    --padding-top: 1rem;
+
+    ion-button{
+        margin: 15px;
+    }
+}
+
+img{
+    margin: auto;
+    display: block;
+}
