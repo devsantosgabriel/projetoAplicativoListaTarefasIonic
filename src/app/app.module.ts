@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
+
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { AngularFireAuthModule} from '@angular/fire/compat/auth';
 import { AngularFireStorageModule} from '@angular/fire/compat/storage';
 import { AngularFirestoreModule} from '@angular/fire/compat/firestore';
 import { AngularFireDatabaseModule} from '@angular/fire/compat/database';
+import { AuthService } from './services/auth.service';
 
 
 @NgModule({
@@ -24,9 +26,9 @@ import { AngularFireDatabaseModule} from '@angular/fire/compat/database';
   AngularFirestoreModule,
   AngularFireAuthModule,
   AngularFireStorageModule,
-  AngularFireDatabaseModule
+  AngularFireDatabaseModule,
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, TarefaService],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, TarefaService, AuthService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
